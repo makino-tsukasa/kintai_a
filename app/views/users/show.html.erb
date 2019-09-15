@@ -1,0 +1,74 @@
+<% provide(:title, @user.name) %>
+
+<div class="row">
+  <div class="col-md-10 col-md-offset-1">
+    <table class="table table-bordered">
+      <tbody>
+        <tr>
+          <td>時間管理表</td>
+          <td>指定勤務開始時間<br>指定勤務終了時間</td>
+          <td colspan="3">基本時間</td>
+          <td>初日</td>
+        </tr>
+        <tr>
+          <td>所属：<%= @user.affiliation %></td>
+          <td>氏名：<%= @user.name %></td>
+          <td>コード</td>
+          <td><%= @user.employee_number %></td>
+          <td>出勤日数</td>
+          <td>締日</td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <table class="table table-bordered">
+      <tbody>
+        <tr>
+          <td rowspan="3">残業申請</td>
+          <td rowspan="3">日付け</td>
+          <td rowspan="3">曜日</td>
+          <td colspan="8">【実績】</td>
+          <td colspan="6">所定外勤務</td>
+        </tr>
+        <tr>
+          <td colspan="3">出社</td>
+          <td colspan="3">退社</td>
+          <td rowspan="2">在社時間</td>
+          <td rowspan="2">備考</td>
+          <td colspan="2">終了予定時間</td>
+          <td rowspan="2">時間外時間</td>
+          <td rowspan="2">業務処理内容</td>
+          <td rowspan="2">指示者確認</td>
+        </tr>
+        <tr>
+          <td>時</td>
+          <td>分</td>
+          <td></td>
+          <td>時</td>
+          <td>分</td>
+          <td></td>
+          <td>時</td>
+          <td>分</td>
+        </tr>
+        <tr>
+          <td><%= link_to '残業申請', "#", class: "btn btn-md btn-primary" %></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
