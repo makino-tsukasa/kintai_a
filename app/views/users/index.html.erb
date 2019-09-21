@@ -1,0 +1,68 @@
+<% provide(:title, "ユーザー一覧") %>
+<% provide(:class_text, "update") %>
+<% provide(:btn_text, "編集する") %>
+
+<h1>ユーザー一覧</h1>
+
+<div class="col-md-10 col-md-offset-1">
+  <%= will_paginate %>
+  <table class="table table-condensed table-hover" id="table-users">
+    <thead>
+      <tr>
+        <th><%= User.human_attribute_name :name %></th>
+      </tr>
+    </thead>
+
+    <% @users.each do |user| %>
+      <tr>
+        <td>
+          <%= user.name %>
+          <%= link_to "削除", user_path(user), method: :delete, 
+              data: { confirm: "削除してよろしいですか？" },
+              class: "btn btn-sm btn-primary btn-destroy" %></br>
+          <button type="button" class="btn btn-primary btn-md btn-edit" data-toggle="collapse" data-target="#user-info<%= user.id %>">
+            編集
+          </button>
+          <div id="user-info<%= user.id %>" class="collapse">
+            <%= form_with(model: user, local: true) do |f| %>
+              <%= render partial: 'shared/error_messages', locals: { obj: user } %>
+            
+              <%= f.label :name, class: "label-#{yield(:class_text)}" %>
+              <%= f.text_field :name, class: "form-control" %>
+            
+              <%= f.label :email, class: "label-#{yield(:class_text)}" %>
+              <%= f.email_field :email, class: "form-control" %>
+              
+              <%= f.label :affiliation, class: "label-#{yield(:class_text)}" %>
+              <%= f.text_field :affiliation, class: "form-control" %>
+              
+              <%= f.label :employee_number, class: "label-#{yield(:class_text)}" %>
+              <%= f.text_field :employee_number, class: "form-control" %>
+            
+              <%= f.label :uid, class: "label-#{yield(:class_text)}" %>
+              <%= f.text_field :uid, class: "form-control" %>
+
+              <%= f.label :basic_work_time, class: "label-#{yield(:class_text)}" %>
+              <%= f.time_field :basic_work_time, class: "form-control" %>
+
+              <%= f.label :designated_work_start_time, class: "label-#{yield(:class_text)}" %>
+              <%= f.time_field :designated_work_start_time, class: "form-control" %>
+
+              <%= f.label :designated_work_end_time, class: "label-#{yield(:class_text)}" %>
+              <%= f.time_field :designated_work_end_time, class: "form-control" %>
+
+              <%= f.label :password, class: "label-#{yield(:class_text)}" %>
+              <%= f.password_field :password, class: "form-control" %>
+            
+              <%= f.label :password_confirmation, "Confirmation", class: "label-#{yield(:class_text)}" %>
+              <%= f.password_field :password_confirmation, class: "form-control" %>
+            
+              <%= f.submit yield(:btn_text), class: "btn btn-primary btn-block btn-#{yield(:class_text)} btn-user-edit" %>
+            <% end %>
+          </div>
+        </td>
+      </tr>
+    <% end %>
+  </table>
+  <%= will_paginate %>
+</div>
