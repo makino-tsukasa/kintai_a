@@ -1,7 +1,7 @@
 <% if obj.errors.any? %>
   <div id="error_explanation">
     <div class="alert alert-danger">
-      <%= obj.errors.count %>個のエラーが見つかりました。
+      入力エラーが<%= obj.errors.count %>件見つかりました。
     </div>
     <ul>
     <% obj.errors.full_messages.each do |msg| %>
