@@ -1,5 +1,4 @@
 <% provide(:title, "ユーザー一覧") %>
-<% provide(:class_text, "update") %>
 <% provide(:btn_text, "編集する") %>
 
 <h1>ユーザー一覧</h1>
@@ -24,41 +23,7 @@
             編集
           </button>
           <div id="user-info<%= user.id %>" class="collapse">
-            <%= form_with(model: user, local: true) do |f| %>
-              <%= render partial: 'shared/error_messages', locals: { obj: user } %>
-            
-              <%= f.label :name, class: "label-#{yield(:class_text)}" %>
-              <%= f.text_field :name, class: "form-control" %>
-            
-              <%= f.label :email, class: "label-#{yield(:class_text)}" %>
-              <%= f.email_field :email, class: "form-control" %>
-              
-              <%= f.label :affiliation, class: "label-#{yield(:class_text)}" %>
-              <%= f.text_field :affiliation, class: "form-control" %>
-              
-              <%= f.label :employee_number, class: "label-#{yield(:class_text)}" %>
-              <%= f.text_field :employee_number, class: "form-control" %>
-            
-              <%= f.label :uid, class: "label-#{yield(:class_text)}" %>
-              <%= f.text_field :uid, class: "form-control" %>
-
-              <%= f.label :basic_work_time, class: "label-#{yield(:class_text)}" %>
-              <%= f.time_field :basic_work_time, class: "form-control" %>
-
-              <%= f.label :designated_work_start_time, class: "label-#{yield(:class_text)}" %>
-              <%= f.time_field :designated_work_start_time, class: "form-control" %>
-
-              <%= f.label :designated_work_end_time, class: "label-#{yield(:class_text)}" %>
-              <%= f.time_field :designated_work_end_time, class: "form-control" %>
-
-              <%= f.label :password, class: "label-#{yield(:class_text)}" %>
-              <%= f.password_field :password, class: "form-control" %>
-            
-              <%= f.label :password_confirmation, class: "label-#{yield(:class_text)}" %>
-              <%= f.password_field :password_confirmation, class: "form-control" %>
-            
-              <%= f.submit yield(:btn_text), class: "btn btn-primary btn-block btn-#{yield(:class_text)} btn-user-edit" %>
-            <% end %>
+            <%= render 'form', user: user %>
           </div>
         </td>
       </tr>

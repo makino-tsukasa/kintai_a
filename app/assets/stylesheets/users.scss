@@ -1,3 +1,23 @@
+/* ユーザー情報テーブル */
+
+.user-table {
+  vertical-align: middle;
+  text-align: center;
+}
+
+/* ユーザー勤怠情報テーブル */
+
+#table-attendances {
+  th {
+    vertical-align: middle;
+    text-align: center;
+  }
+  td {
+    vertical-align: middle;
+    text-align: center;
+  }
+}
+
 /* index */
 
 .btn-destroy {
@@ -8,10 +28,6 @@
   margin-bottom: 5px;
 }
 
-.btn-user-edit {
-  margin: 10px 0;
-}
-
 .collapse {
   margin-top: 15px;
 }
@@ -19,5 +35,9 @@
 /* _form */
 
 .btn-in-form {
-  margin-top: 10px;
+  margin: 10px 0;
+}
+
+.label-form {
+  margin-top: 5px;
 }

@@ -2,12 +2,15 @@ class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy]
   before_action :logged_in_user, only: [:show, :edit, :update]
   # before_action :correct_user, only: [:edit, :update]
+  # before_action :admin_user, only: [:edit, :update, :destroy]
+  before_action :set_one_month, only: :show
   
   def index
     @users = User.paginate(page: params[:page])
   end
   
   def show
+    @worked_sum = @attendances.where.not(started_at: nil).count
   end
 
   def new
@@ -47,8 +50,9 @@ class UsersController < ApplicationController
   private
 
     def user_params
-      params.require(:user).permit(:name, :email, :affiliation,
-                                   :employee_number, :uid,
+      params.require(:user).permit(:name, :email, :affiliation, :employee_number, :uid,
+                                   :basic_work_time,
+                                   :designated_work_start_time, :designated_work_end_time,
                                    :password, :password_confirmation)
     end
     
@@ -72,5 +76,15 @@ class UsersController < ApplicationController
     def correct_user
       @user = User.find(params[:id])
       redirect_to(root_url) unless @user == current_user
+    end
+    
+    # システム管理権限所有かどうか判定します。
+    def admin_user
+      redirect_to root_url unless current_user.admin?
+    end
+    
+    # 上長権限所有かどうかを判定
+    def superior_user
+      redirect_to root_url unless current_user.superior?
     end
 end
