@@ -1,0 +1,27 @@
+<% provide(:title, "拠点一覧") %>
+
+<h1>拠点一覧</h1>
+
+<table class="table table-borderd">
+  <thead>
+    <tr>
+      <th></th>
+      <th></th>
+      <th>拠点番号</th>
+      <th>拠点名</th>
+      <th>拠点種類</th>
+    </tr>
+  </thead>
+  
+  <tbody>
+    <% @bases.each do |base| %>
+      <tr>
+        <td><%= link_to "修正", "#", class: "btn btn-md btn-primary" %></td>
+        <td><%= link_to "削除", "#", class: "btn btn-md btn-primary" %></td>
+        <td><%= base.base_number %></td>
+        <td><%= base.base_name %></td>
+        <td><%= base.type_of_attendance %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
