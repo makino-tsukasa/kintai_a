@@ -7,13 +7,13 @@ Rails.application.routes.draw do
   post '/login', to: 'sessions#create'
   delete '/logout', to: 'sessions#destroy'
   get '/users/index_working_on', to: 'users#index_working_on'
-
+  
   get '/bases', to: 'bases#index'
-  post '/bases', to: 'bases#create'
+  get '/bases/edit', to: 'bases#edit'
+  patch '/bases/edit', to:'bases#update'
+  delete 'bases/destroy', to: 'bases#destroy'
   get 'bases/new', to: 'bases#new'
-  get 'bases/:id/edit', to: 'bases#edit'
-  patch 'bases/:id', to: 'bases#update'
-  delete 'bases/:id', to: 'bases#destroy'
+  post 'bases/new', to: 'bases#create'
   
   resources :users do
     collection { post :import }

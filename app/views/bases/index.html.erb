@@ -2,7 +2,7 @@
 
 <h1>拠点一覧</h1>
 
-<table class="table table-borderd">
+<table class="table table-borderd table-bases">
   <thead>
     <tr>
       <th></th>
@@ -16,8 +16,11 @@
   <tbody>
     <% @bases.each do |base| %>
       <tr>
-        <td><%= link_to "修正", "#", class: "btn btn-md btn-primary" %></td>
-        <td><%= link_to "削除", "#", class: "btn btn-md btn-primary" %></td>
+        <td><%= link_to "修正", bases_edit_path(id: base.id), remote: true, class: "btn btn-md btn-primary" %></td>
+        <td>
+          <%= link_to "削除", bases_destroy_path(id: base.id), method: :delete,
+            data: { confirm: "削除してよろしいですか？" }, class: "btn btn-md btn-primary" %>
+        </td>
         <td><%= base.base_number %></td>
         <td><%= base.base_name %></td>
         <td><%= base.type_of_attendance %></td>
@@ -25,3 +28,9 @@
     <% end %>
   </tbody>
 </table>
+
+<%= link_to "拠点情報追加", bases_new_path, remote: true, class: "btn btn-lg btn-primary" %>
+
+<!--モーダルウインドウ表示-->
+<div id="bases-new" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+<div id="bases-edit" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>

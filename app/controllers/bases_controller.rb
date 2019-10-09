@@ -11,36 +11,39 @@ class BasesController < ApplicationController
   def create
     @base = Base.new(base_params)
     if @base.save
-      flash[:success] = "拠点登録完了しました。"
+      flash[:success] = "拠点情報を追加しました。"
       redirect_to bases_url
     else
-      render :index
+      flash[:danger] = "拠点情報を追加できませんでした。"
+      redirect_to bases_url
     end
+  end
     
-  end
-  
-  def edit
-  end
-  
-  def update
-    @base = Base.find(params[:id])
-    if @base.attributes(base_oarams)
-      flash[:success] = "拠点情報を修正しました。"
-      redirect_to bases_url
-    else
-      render :index
-    end
-  end
-  
   def destroy
     @base = Base.find(params[:id])
     if @base.destroy
       flash[:success] = "拠点情報を削除しました。"
-          redirect_to bases_url
+      redirect_to bases_url
     else
       render :index
     end
   end
+  
+  def edit
+    @base = Base.find(params[:id])
+  end
+  
+  def update
+    @base = Base.find(params[:id])
+    if @base.update_attributes(base_params)
+      flash[:success] = "拠点情報を修正しました。"
+      redirect_to bases_url
+    else
+      flash[:danger] = "拠点情報を修正することができませんでした。"
+      redirect_to bases_url
+    end
+  end
+  
   
   private
   
