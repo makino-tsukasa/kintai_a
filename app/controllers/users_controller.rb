@@ -2,7 +2,7 @@ class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy]
   before_action :logged_in_user, only: [:show, :edit, :update]
   # before_action :correct_user, only: [:edit, :update]
-  # before_action :admin_user, only: [:edit, :update, :destroy]
+  before_action :admin_user, only: [:index, :index_working_on, :edit, :update, :destroy]
   before_action :set_one_month, only: :show
   
   def index
@@ -21,6 +21,13 @@ class UsersController < ApplicationController
   
   def show
     @worked_sum = @attendances.where.not(started_at: nil).count
+    respond_to do |format|
+      format.html
+      format.csv do
+        send_data render_to_string, filename: "#{@user.name} 勤怠情報.csv", type: :csv
+          #csv用の処理を書く
+      end
+    end
   end
 
   def new

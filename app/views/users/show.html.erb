@@ -24,12 +24,14 @@
   </tbody>
 </table>
 <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-md btn-primary btn-edit-attendances" %>
+<%= link_to "CSV出力", user_path(@user, format: :csv), class: "btn btn-primary btn-csv-export" %></br>
+<%= link_to "勤怠修正ログ（承認済）", "#", class: "btn btn-primary btn-reviced-attendaces" %>
 
 <table class="table table-bordered table-condensed" id="table-attendances">
   <thead>
     <tr>
       <td rowspan="3">残業申請</td>
-      <td rowspan="3">日付け</td>
+      <td rowspan="3">日付</td>
       <td rowspan="3">曜日</td>
       <td colspan="8">【実績】</td>
       <td colspan="6">所定外勤務</td>
