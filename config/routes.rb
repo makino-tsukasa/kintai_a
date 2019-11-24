@@ -20,6 +20,9 @@ Rails.application.routes.draw do
     member do
       get 'attendances/edit_one_month'
       patch 'attendances/update_one_month'
+      # 残業申請用のroute ↓
+      get 'edit_extrawork', to: 'attendances#edit_extrawork', as: 'edit_extrawork'
+      patch 'update_extrawork', to: 'attendances#update_extrawork', as: 'update_extrawork' 
     end
     
     resources :attendances, only: :update

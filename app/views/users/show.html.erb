@@ -44,7 +44,7 @@
       <td colspan="2">終了予定時間</td>
       <td rowspan="2">時間外時間</td>
       <td rowspan="2">業務処理内容</td>
-      <td rowspan="2">指示者確認</td>
+      <td rowspan="2">指示者確認印</td>
     </tr>
     <tr>
       <td>時</td>
@@ -61,7 +61,7 @@
   <% @attendances.each do |day| %>
     <tbody>
       <tr>
-        <td><%= link_to '残業申請', "#", class: "btn btn-md btn-primary" %></td>
+        <td><%= link_to '残業申請', edit_extrawork_user_path(@user, day), remote: true, class: "btn btn-md btn-primary" %></td>
         <td><%= l(day.worked_on, format: :short) %></td>
         <td><%= $days_of_the_week[day.worked_on.wday] %></td>
         <td><%= l(day.started_at, format: :hour) if day.started_at.present? %></td>
@@ -107,3 +107,6 @@
     </tr>
   </tfoot> 
 </table>
+
+<!--モーダルウインドウ表示-->
+<div id="edit-extrawork" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>

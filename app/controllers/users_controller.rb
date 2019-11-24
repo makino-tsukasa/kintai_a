@@ -51,9 +51,10 @@ class UsersController < ApplicationController
   def update
     if @user.update_attributes(user_params)
       flash[:success] = "ユーザー情報を編集しました。"
-      redirect_to @user
+      redirect_to users_url
     else
-      render :edit  
+      flash[:danger] = "#{@user.name}の情報を更新することができませんでした。"
+      redirect_to users_url 
     end
   end
   

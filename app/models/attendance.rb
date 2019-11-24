@@ -1,6 +1,8 @@
 class Attendance < ApplicationRecord
   belongs_to :user
   
+  enum status: { "なし" => 1, "申請中" => 2, "承認" => 3, "否認" => 4 }
+  
   validates :worked_on, presence: true
   validates :note, length: { maximum: 50 }
   validates :details_of_tasks, length: { maximum: 250 }

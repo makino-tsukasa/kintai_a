@@ -1,5 +1,5 @@
 class AttendancesController < ApplicationController
-  before_action :set_user, only: :edit_one_month
+  before_action :set_user, only: [:edit_one_month, :edit_extrawork, :update_extrawork]
   before_action :logged_in_user, only: [:update, :edit_one_month]
   before_action :set_one_month, only: :edit_one_month
   
@@ -42,9 +42,26 @@ class AttendancesController < ApplicationController
     redirect_to attendances_edit_one_month_user_url(date: params[:date])
   end
 
+  def edit_extrawork
+    @attendance = @user.attendances.find_by(id: params[:format])
+  end
+  
+  def update_extrawork
+    @attendance = Attendance.find_by(worked_on: params[:worked_on])
+    if @attenadnce.update_attributes(extrawork_params)
+      flash[:success] = "残業申請を登録しました。"
+      redirect_to users_url
+    end
+  end
+  
+  
   private
     # 1ヶ月分の勤怠情報を扱います。
     def attendances_params
       params.require(:user).permit(attendances: [:started_at, :finished_at, :note])[:attendances]
+    end
+    
+    def extrawork_params
+      params.require(:user).permit(attendances: [:expecting_finishtime, :details_of_tasks, :request_to, :status])
     end
 end
