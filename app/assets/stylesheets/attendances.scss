@@ -1,3 +1,25 @@
-// Place all the styles related to the Attendances controller here.
-// They will automatically be included in application.css.
-// You can use Sass (SCSS) here: http://sass-lang.com/
+/* _edit_approve_extrawork_requet */
+#table-attendances {
+ th {
+    vertical-align: middle;
+    text-align: center;
+  }
+  td {
+    vertical-align: middle;
+    text-align: center;
+  }
+}
+
+h4 {
+  text-align: center;
+}
+
+.btn-submit {
+  display: block;
+  text-align: center;
+}
+
+.btn-submit-request {
+  display: block;
+  width: 100%;
+}

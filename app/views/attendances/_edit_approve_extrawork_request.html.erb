@@ -1,0 +1,63 @@
+<div class="modal-dialog modal-lg modal-dialog-center">
+  <div class="modal-content">
+
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <h1 class="modal-title"><%= @user.name %>宛の残業申請</h1>
+    </div>
+    
+    <div class="modal-body">
+      <%= form_with(model: @attendances, url: approve_extrawork_request_user_path(@user, @attendances), local: true, method: :patch) do |f| %>
+        <%= @users.each do |user| %>
+          <h4><%= "【#{user.name}からの残業申請】" %></h4>
+          
+              <table class="table table-bordered" id="table-attendances">
+                <thead>
+                  <tr>
+                    <th>日付</th>
+                    <th>曜日</th>
+                    <th>終了予定時間</th>
+                    <th>指定勤務終了時間</th>
+                    <th>時間外時間</th>
+                    <th>業務処理内容</th>
+                    <th>指示者確認㊞</th>
+                    <th>変更</th>
+                    <th>勤怠を確認する</th>
+                  </tr>
+                </thead>
+
+                <% attendances = @attendances.where(user_id: user.id) %>
+                  <% attendances.each do |attendance| %>
+                    <%= fields_for "attendances[]", attendance do |af| %>
+                      <tbody>
+                        <tr>
+                          <td><%= l(attendance.worked_on, format: :short) %></td>
+                          <td>
+                            <% if attendance.worked_on.wday == 0 %>
+                              <font color="red">日</font>
+                            <% elsif attendance.worked_on.wday == 6 %>
+                              <font color="blue">土</font>
+                            <% else %>
+                              <%= $days_of_the_week[attendance.worked_on.wday] %>
+                            <% end %>
+                          </td>
+                          <td><%= l(attendance.expecting_finish_time, format: :time) %></td>
+                          <td><%= l(attendance.redesignated_endtime, format: :time) %></td>
+                          <td><%= working_times(attendance.redesignated_endtime, attendance.expecting_finish_time) %></td>
+                          <td><%= attendance.details_of_tasks %></td>
+                          <td><%= af.select :status, Attendance.statuses.keys.to_a, class: "form-control" %></td>
+                          <td><%= af.check_box :approve %></td>
+                          <td><%= link_to '確認', user_path(user, date: attendance.worked_on), class: "btn btn-md btn-primary" %></td>
+                        </tr>
+                      </tbody>
+                    <% end %>
+                <% end %>
+              </table>
+            <% end %>
+          <%= f.submit "変更を送信する", class: "btn btn-md btn-primary btn-submit" %>
+      <% end %>  
+    </div>
+  </div>
+</div>

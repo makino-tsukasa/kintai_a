@@ -15,14 +15,18 @@ Rails.application.routes.draw do
   get 'bases/new', to: 'bases#new'
   post 'bases/new', to: 'bases#create'
   
+  get '/system_info/edit', to: 'static_pages#edit_system_info'
+  
   resources :users do
     collection { post :import }
     member do
       get 'attendances/edit_one_month'
       patch 'attendances/update_one_month'
       # 残業申請用のroute ↓
-      get 'edit_extrawork', to: 'attendances#edit_extrawork', as: 'edit_extrawork'
-      patch 'update_extrawork', to: 'attendances#update_extrawork', as: 'update_extrawork' 
+      get 'extrawork_request', to: 'attendances#edit_extrawork_request'
+      patch 'extrawork_request', to: 'attendances#update_extrawork_request'
+      get 'approve_extrawork_request', to: 'attendances#edit_approve_extrawork_request'
+      patch 'approve_extrawork_request', to: 'attendances#update_approve_extrawork_request'
     end
     
     resources :attendances, only: :update

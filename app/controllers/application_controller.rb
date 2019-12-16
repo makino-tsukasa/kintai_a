@@ -34,6 +34,14 @@ class ApplicationController < ActionController::Base
     end  
   end
   
+  # 管理者の場合は遷移不可
+  def except_admin_user
+    if current_user.admin?
+      flash[:danger] = "管理者には権限がありません。"
+      redirect_to root_url
+    end  
+  end
+  
   # 上長権限所有かどうかを判定
   def superior_user
     redirect_to root_url unless current_user.superior?

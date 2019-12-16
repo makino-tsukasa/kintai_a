@@ -1,0 +1,53 @@
+<div class="modal-dialog modal-lg modal-dialog-center">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <h1 class="modal-title">残業申請</h1>
+    </div>
+    <div class="modal-body">
+      <%= form_with(model: @attendance, url: extrawork_request_user_path(@user, @attendance), local: true, method: :patch) do |f| %>
+        <table class="table table-bordered" id="table-attendances">
+          <thead>
+            <tr>
+              <th>日付</th>
+              <th>曜日</th>
+              <th>終了予定時間</th>
+              <th>翌日</th>
+              <th>業務処理内容</th>
+              <th>指示者確認㊞</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><%= l(@attendance.worked_on, format: :short) =%></td>
+              <td>
+                <% if @attendance.worked_on.wday == 0 %>
+                  <font color="red">日</font>
+                <% elsif @attendance.worked_on.wday == 6 %>
+                  <font color="blue">土</font>
+                <% else %>
+                  <%= $days_of_the_week[@attendance.worked_on.wday] %>
+                <% end %>
+              </td>
+              <td><%= f.time_field :expecting_finish_time, class: "form-control" %></td>
+              <td><%= f.check_box :next_day %></td>
+              <td><%= f.text_field :details_of_tasks, class: "form-control" %></td>
+              <td>
+                <% if @user.id == 2 %>
+                  <%= f.select :request_to, ["上長ユーザー2"] %>
+                <% elsif @user.id == 3 %>
+                  <%= f.select :request_to, ["上長ユーザー1"] %>
+                <% else %>
+                  <%= f.select :request_to, Attendance.request_tos.keys.to_a %>
+                <% end %>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <%= f.submit "変更を送信する", class: "btn btn-md btn-primary btn-submit-request" %>
+      <% end %>
+    </div>
+  </div>
+</div>
