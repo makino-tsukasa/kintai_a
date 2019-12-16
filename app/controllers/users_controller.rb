@@ -3,10 +3,11 @@ class UsersController < ApplicationController
   before_action :logged_in_user, only: [:show, :edit, :update]
   # before_action :correct_user, only: [:edit, :update]
   before_action :admin_user, only: [:index, :index_working_on, :edit, :update, :destroy]
+  before_action :except_admin_user, only: :show
   before_action :set_one_month, only: :show
   
   def index
-    @users = User.paginate(page: params[:page])
+    @users = User.paginate(page: params[:page]).where.not(id: 1)
   end
   
   def index_working_on
@@ -15,8 +16,8 @@ class UsersController < ApplicationController
   
   def import
     # fileはtmpに自動で一時保存される
-    User.import(params[:file])
-    redirect_to users_url
+      User.import(params[:file])
+      redirect_to users_url
   end
   
   def show
@@ -28,6 +29,7 @@ class UsersController < ApplicationController
           #csv用の処理を書く
       end
     end
+    @approve_extrawork_request = Attendance.where(request_to: @user.id).where(status: 2)
   end
 
   def new
