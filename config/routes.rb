@@ -22,11 +22,17 @@ Rails.application.routes.draw do
     member do
       get 'attendances/edit_one_month'
       patch 'attendances/update_one_month'
-      # 残業申請用のroute ↓
+      # 残業申請
       get 'extrawork_request', to: 'attendances#edit_extrawork_request'
       patch 'extrawork_request', to: 'attendances#update_extrawork_request'
+      # 残業申請承認（上長）
       get 'approve_extrawork_request', to: 'attendances#edit_approve_extrawork_request'
       patch 'approve_extrawork_request', to: 'attendances#update_approve_extrawork_request'
+      # 一日分の勤怠変更承認（上長）
+      get 'approve_oneday_request', to: 'attendances#edit_approve_oneday_request'
+      patch 'approve_oneday_request', to: 'attendances#update_approve_oneday_request'
+      # 勤怠変更ログ
+      get 'approved_request', to: 'attendances#approved_request'
     end
     
     resources :attendances, only: :update

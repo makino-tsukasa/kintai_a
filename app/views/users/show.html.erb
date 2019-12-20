@@ -31,7 +31,16 @@
 
 <% if current_user.superior? && (@user == current_user) %>
   <div><%= link_to "【所属長承認申請のお知らせ】", "#" %></div>
-  <div>【勤怠変更申請のお知らせ】</div>
+  <div>
+    <% if @approve_oneday_request.count >= 1 %>
+      <font color="red">
+        <%= link_to "【勤怠変更申請のお知らせ】", approve_oneday_request_user_path(@user), remote: true, style: "color:red" %>
+        <b style="border: 3px solid;"><%= @approve_oneday_request.count %>件の通知があります</b>
+      </font>
+    <% else %>
+      <div>【勤怠変更申請のお知らせ】</div>
+    <% end %>
+  </div>
   <div>
     <% if @approve_extrawork_request.count >= 1 %>
       <font color="red">
@@ -47,7 +56,7 @@
 <% if !current_user.superior? || (@user == current_user) %>
   <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-md btn-primary btn-edit-attendances" %>
   <%= link_to "CSV出力", user_path(@user, format: :csv), class: "btn btn-primary btn-csv-export" %></br>
-  <%= link_to "勤怠修正ログ（承認済）", "#", class: "btn btn-primary btn-reviced-attendaces" %>
+  <%= link_to "勤怠修正ログ（承認済）", approved_request_user_path(@user), remote: true, class: "btn btn-primary btn-reviced-attendaces" %>
 <% end %>
 <table class="table table-bordered table-condensed" id="table-attendances">
   <thead>
@@ -139,6 +148,13 @@
           <% elsif at.request_to.present? %>
             <div><%= at.request_to %>　残業<%= at.status %></div>
           <% end %>
+          <% if at.oneday_attendance_status == "承認" %>
+            <div>勤怠変更<%= at.oneday_attendance_status %>済</div>
+          <% elsif at.oneday_attendance_status == "否認" %>
+            <div>勤怠変更<%= at.oneday_attendance_status%></div>
+          <% elsif at.oneday_attendance_request_to.present? %>
+            <div><%= at.oneday_attendance_request_to %>　勤怠変更<%= at.oneday_attendance_status %></div>
+          <% end %>
         </td>
       </tr>
     <% end %>
@@ -163,3 +179,5 @@
 <!--モーダルウインドウ表示-->
 <div id="edit-extrawork-request" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
 <div id="edit-approve-extrawork-request" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+<div id="edit-approve-oneday-request" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+<div id="approved-request" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>

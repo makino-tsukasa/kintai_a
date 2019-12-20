@@ -29,7 +29,8 @@ class UsersController < ApplicationController
           #csv用の処理を書く
       end
     end
-    @approve_extrawork_request = Attendance.where(request_to: @user.id).where(status: 2)
+    @approve_extrawork_request = Attendance.where(request_to: @user.id).where(status: 2).or(Attendance.where(request_to: @user.id).where(status: 4))
+    @approve_oneday_request = Attendance.where(oneday_attendance_request_to: @user.id).where(oneday_attendance_status: 2).or(Attendance.where(oneday_attendance_request_to: @user.id).where(oneday_attendance_status: 4))
   end
 
   def new

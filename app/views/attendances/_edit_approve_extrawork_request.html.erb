@@ -5,7 +5,6 @@
       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
-      <h1 class="modal-title"><%= @user.name %>宛の残業申請</h1>
     </div>
     
     <div class="modal-body">
@@ -49,7 +48,7 @@
                           <td><%= attendance.details_of_tasks %></td>
                           <td><%= af.select :status, Attendance.statuses.keys.to_a, class: "form-control" %></td>
                           <td><%= af.check_box :approve %></td>
-                          <td><%= link_to '確認', user_path(user, date: attendance.worked_on), class: "btn btn-md btn-primary" %></td>
+                          <td><%= link_to '確認', user_path(user, date: attendance.worked_on.beginning_of_month), class: "btn btn-md btn-primary" %></td>
                         </tr>
                       </tbody>
                     <% end %>

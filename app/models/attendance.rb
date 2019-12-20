@@ -1,10 +1,14 @@
 class Attendance < ApplicationRecord
   belongs_to :user
   
-  enum request_to: { "上長ユーザー1" => 2, "上長ユーザー2" => 3 }
-  enum status: { "なし" => 1, "申請中" => 2, "承認" => 3, "否認" => 4 }
+  enum request_to: { "上長ユーザー1" => 2, "上長ユーザー2" => 3 }, _prefix: true
+  enum status: { "なし" => 1, "申請中" => 2, "承認" => 3, "否認" => 4 }, _prefix: true
+  
+  enum oneday_attendance_request_to: { "上長ユーザー1" => 2, "上長ユーザー2" => 3 }, _prefix: true
+  enum oneday_attendance_status: { "なし" => 1, "申請中" => 2, "承認" => 3, "否認" => 4 }, _prefix: true
   
   validates :approve, acceptance: true
+  validates :next_day, acceptance: true
   validates :worked_on, presence: true
   validates :note, length: { maximum: 50 }
   validates :details_of_tasks, length: { maximum: 250 }

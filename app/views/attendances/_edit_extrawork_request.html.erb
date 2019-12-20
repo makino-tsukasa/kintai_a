@@ -36,11 +36,11 @@
               <td><%= f.text_field :details_of_tasks, class: "form-control" %></td>
               <td>
                 <% if @user.id == 2 %>
-                  <%= f.select :request_to, ["上長ユーザー2"] %>
+                  <%= f.select :request_to, options_for_select(["", "上長ユーザー2"], selected: "") %>
                 <% elsif @user.id == 3 %>
-                  <%= f.select :request_to, ["上長ユーザー1"] %>
+                  <%= f.select :request_to, options_for_select(["", "上長ユーザー1"], selected: "") %>
                 <% else %>
-                  <%= f.select :request_to, Attendance.request_tos.keys.to_a %>
+                  <%= f.select :request_to, options_for_select(["", "上長ユーザー1", "上長ユーザー2"], selected: "") %>
                 <% end %>
               </td>
             </tr>

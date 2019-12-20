@@ -1,0 +1,38 @@
+<div class="modal-dialog modal-lg modal-dialog-center">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <h1 class="modal-title">勤怠ログ</h1>
+    </div>
+    <div class="modal-body">
+      <table class="table table-bordered" id="table-attendances">
+        <thead>
+          <tr>
+            <th>日付</th>
+            <th>変更前出社時間</th>
+            <th>変更前退社時間</th>
+            <th>変更後出社時間</th>
+            <th>変更後退社時間</th>
+            <th>指示者</th>
+            <th>承認日</th>
+          </tr>
+        </thead>
+        <% @attendances.each do |at| %>
+          <tbody>
+            <tr>
+              <td><%= at.worked_on %></td>
+              <td><%= l(at.first_started_at, format: :time) if at.first_started_at.present? %></td>
+              <td><%= l(at.first_finished_at, format: :time) if at.first_finished_at.present? %></td>
+              <td><%= l(at.started_at, format: :time) %></td>
+              <td><%= l(at.finished_at, format: :time) %></td>
+              <td><%= at.oneday_attendance_request_to %></td>
+              <td><%= at.date_of_approvement.strftime("%Y-%m-%d") %></td>
+            </tr>
+          </tbody>
+        <% end %>
+      </table>
+    </div>
+  </div>
+</div>
