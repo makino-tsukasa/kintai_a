@@ -30,22 +30,31 @@
 </table>
 
 <% if current_user.superior? && (@user == current_user) %>
-  <div><%= link_to "【所属長承認申請のお知らせ】", "#" %></div>
   <div>
-    <% if @approve_oneday_request.count >= 1 %>
+    <% if @monthly_request.count >= 1 %>
+      <font color="red">
+        <%= link_to "【所属長承認申請のお知らせ】", approve_monthly_request_user_path(@user), remote: true, style: "color:red" %>
+        <b style="border: 3px solid;"><%= @monthly_request.count %>件の通知があります</b>
+      </font>
+    <% else %>
+      <div>【所属長承認申請のお知らせ】</div>
+    <% end %>
+  </div>
+  <div>
+    <% if @oneday_request.count >= 1 %>
       <font color="red">
         <%= link_to "【勤怠変更申請のお知らせ】", approve_oneday_request_user_path(@user), remote: true, style: "color:red" %>
-        <b style="border: 3px solid;"><%= @approve_oneday_request.count %>件の通知があります</b>
+        <b style="border: 3px solid;"><%= @oneday_request.count %>件の通知があります</b>
       </font>
     <% else %>
       <div>【勤怠変更申請のお知らせ】</div>
     <% end %>
   </div>
   <div>
-    <% if @approve_extrawork_request.count >= 1 %>
+    <% if @extrawork_request.count >= 1 %>
       <font color="red">
         <%= link_to "【残業申請のお知らせ】", approve_extrawork_request_user_path(@user), remote: true, style: "color:red" %>
-        <b style="border: 3px solid;"><%= @approve_extrawork_request.count %>件の通知があります</b>
+        <b style="border: 3px solid;"><%= @extrawork_request.count %>件の通知があります</b>
       </font>
     <% else %>
       <div>【残業申請のお知らせ】</div>
@@ -55,7 +64,11 @@
 </br>
 <% if !current_user.superior? || (@user == current_user) %>
   <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-md btn-primary btn-edit-attendances" %>
-  <%= link_to "CSV出力", user_path(@user, format: :csv), class: "btn btn-primary btn-csv-export" %></br>
+  <% if @attendance.monthly_approvement_status == "承認" %>
+    <%= link_to "CSV出力", user_path(@user, date: @first_day, format: :csv), class: "btn btn-primary btn-csv-export" %></br>
+  <% else %>
+    <%= link_to "CSV出力", user_path(@user, date: @first_day, format: :csv), class: "btn btn-primary btn-csv-export disabled" %></br>
+  <% end %>
   <%= link_to "勤怠修正ログ（承認済）", approved_request_user_path(@user), remote: true, class: "btn btn-primary btn-reviced-attendaces" %>
 <% end %>
 <table class="table table-bordered table-condensed" id="table-attendances">
@@ -141,19 +154,15 @@
         </td>
         <td><%= at.details_of_tasks if at.details_of_tasks.present? %></td>
         <td>
-          <% if at.status == "承認" %>
-            <div>残業<%= at.status %>済</div>
-          <% elsif at.status == "否認" %>
-            <div>残業<%= at.status %></div>
-          <% elsif at.request_to.present? %>
-            <div><%= at.request_to %>　残業<%= at.status %></div>
+          <% if at.status == "申請中" %>
+            <div><%= at.request_to %>：残業<%= at.status %></div>
+          <% elsif (at.status == "承認") || (at.status == "否認") %>
+            <div><%= at.request_to %>：残業<%= at.status %>済</div>
           <% end %>
-          <% if at.oneday_attendance_status == "承認" %>
-            <div>勤怠変更<%= at.oneday_attendance_status %>済</div>
-          <% elsif at.oneday_attendance_status == "否認" %>
-            <div>勤怠変更<%= at.oneday_attendance_status%></div>
-          <% elsif at.oneday_attendance_request_to.present? %>
-            <div><%= at.oneday_attendance_request_to %>　勤怠変更<%= at.oneday_attendance_status %></div>
+          <% if at.oneday_attendance_status == "申請中" %>
+            <div><%= at.oneday_attendance_request_to %>：勤怠変更<%= at.oneday_attendance_status %></div>
+          <% elsif (at.oneday_attendance_status == "承認") || (at.oneday_attendance_status == "否認") %>
+            <div><%= at.oneday_attendance_request_to %>：勤怠変更<%= at.oneday_attendance_status %>済</div>
           <% end %>
         </td>
       </tr>
@@ -168,8 +177,27 @@
       <td>在社合計：<%= format("%.2f", @month_total_working_times.to_f) %></td>
       <td colspan="5"></td>
       <td>
+        <% if @attendance.monthly_approvement_status == "申請中" %>
+          <%= @attendance.monthly_approvement_to %>：<%= @attendance.monthly_approvement_status %>
+        <% elsif (@attendance.monthly_approvement_status == "承認") || (@attendance.monthly_approvement_status == "否認") %>
+          <%= @attendance.monthly_approvement_to %>：<%= @attendance.monthly_approvement_status %>済
+        <% else %>
+          <div>所属長承認：未</div>
+        <% end %>
+        
         <% if !current_user.superior? || (@user == current_user) %>
-          <%= link_to "申請", "#", class: "btn btn-lg btn-primary" %>
+          <%= form_with(url: monthly_request_user_path(@user, date: @first_day), method: :patch, local: true) do |f| %>
+            <% if @user.id == 2 %>
+              <%= f.select :monthly_approvement_to, options_for_select(["", "上長ユーザー2"], selected: "") %>
+            <% elsif @user.id == 3 %>
+              <%= f.select :monthly_approvement_to, options_for_select(["", "上長ユーザー1"], selected: "") %>
+            <% else %>
+              <%= f.select :monthly_approvement_to, options_for_select(["", "上長ユーザー1", "上長ユーザー2"], selected: "") %>
+            <% end %>
+            </br>
+            </br>
+            <%= f.submit "申請", class: "btn btn-md btn-primary" %>
+          <% end %>
         <% end %>
       </td>
     </tr>
@@ -180,4 +208,5 @@
 <div id="edit-extrawork-request" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
 <div id="edit-approve-extrawork-request" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
 <div id="edit-approve-oneday-request" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+<div id="edit-approve-monthly-request" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
 <div id="approved-request" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>

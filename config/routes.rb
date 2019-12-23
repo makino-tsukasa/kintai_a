@@ -33,6 +33,11 @@ Rails.application.routes.draw do
       patch 'approve_oneday_request', to: 'attendances#update_approve_oneday_request'
       # 勤怠変更ログ
       get 'approved_request', to: 'attendances#approved_request'
+      # 一ヶ月分の勤怠申請
+      patch 'monthly_request', to: 'attendances#monthly_request'
+      # 一ヶ月分の勤怠承認（上長）
+      get 'approve_monthly_request', to: 'attendances#edit_approve_monthly_request'
+      patch 'approve_monthly_request', to: 'attendances#update_approve_monthly_request'
     end
     
     resources :attendances, only: :update

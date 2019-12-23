@@ -1,6 +1,7 @@
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy]
   before_action :logged_in_user, only: [:show, :edit, :update]
+  before_action :superior_or_correct_user, only: :show
   # before_action :correct_user, only: [:edit, :update]
   before_action :admin_user, only: [:index, :index_working_on, :edit, :update, :destroy]
   before_action :except_admin_user, only: :show
@@ -16,8 +17,13 @@ class UsersController < ApplicationController
   
   def import
     # fileはtmpに自動で一時保存される
+    if params[:file] == ""
+      flash[:danger] = "インポートするCSVファイルを選択してください"
+      redirect_to users_url
+    else
       User.import(params[:file])
       redirect_to users_url
+    end
   end
   
   def show
@@ -29,8 +35,10 @@ class UsersController < ApplicationController
           #csv用の処理を書く
       end
     end
-    @approve_extrawork_request = Attendance.where(request_to: @user.id).where(status: 2).or(Attendance.where(request_to: @user.id).where(status: 4))
-    @approve_oneday_request = Attendance.where(oneday_attendance_request_to: @user.id).where(oneday_attendance_status: 2).or(Attendance.where(oneday_attendance_request_to: @user.id).where(oneday_attendance_status: 4))
+    @extrawork_request = Attendance.where(request_to: @user.id).where(status: 2).or(Attendance.where(request_to: @user.id).where(status: 4))
+    @oneday_request = Attendance.where(oneday_attendance_request_to: @user.id).where(oneday_attendance_status: 2).or(Attendance.where(oneday_attendance_request_to: @user.id).where(oneday_attendance_status: 4))
+    @monthly_request = Attendance.where(monthly_approvement_to: @user.id).where(monthly_approvement_status: 2).or(Attendance.where(monthly_approvement_to: @user.id).where(monthly_approvement_status: 4))
+    @attendance = Attendance.find_by(user_id: params[:id], worked_on: @first_day)
   end
 
   def new
@@ -53,10 +61,10 @@ class UsersController < ApplicationController
 
   def update
     if @user.update_attributes(user_params)
-      flash[:success] = "ユーザー情報を編集しました。"
+      flash[:success] = "#{@user.name}のユーザー情報を編集しました。"
       redirect_to users_url
     else
-      flash[:danger] = "#{@user.name}の情報を更新することができませんでした。"
+      flash[:danger] = "誤った入力データがあった為、ユーザー情報の更新をキャンセルしました。"
       redirect_to users_url 
     end
   end

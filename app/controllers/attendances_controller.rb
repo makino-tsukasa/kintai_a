@@ -1,6 +1,7 @@
 class AttendancesController < ApplicationController
   before_action :set_user, only: [:edit_one_month, :edit_extrawork_request, :update_extrawork_request,
-                                  :edit_approve_extrawork_request, :edit_approve_oneday_request, :approved_request]
+                                  :edit_approve_extrawork_request, :edit_approve_oneday_request, :approved_request,
+                                  :monthly_request, :edit_approve_monthly_request]
   before_action :logged_in_user, only: [:update, :edit_one_month]
   before_action :set_one_month, only: :edit_one_month
   
@@ -40,7 +41,7 @@ class AttendancesController < ApplicationController
         
         n = attendance.id.to_s
         if params[:user][:attendances][n][:oneday_attendance_request_to].present?
-          attendance.update_attributes!(item)
+          attendance.update_attributes(item)
           attendance.oneday_attendance_status = "申請中"
           attendance.request_started_at = attendance.request_started_at.change(year: attendance.worked_on.year,
                                                                                month: attendance.worked_on.month,
@@ -51,11 +52,15 @@ class AttendancesController < ApplicationController
           if params[:user][:attendances][n][:next_day] == "1"
             attendance.request_finished_at = attendance.request_finished_at.tomorrow
           end
+          attendance.save
+          flash[:success] = "勤怠変更を申請しました。"
+        else
+          flash[:danger] = "所属長の選択がない勤務日は変更されません。"
         end
-        attendance.save
+        
       end
     end
-  flash[:success] = "勤怠編集を申請しました。"
+  
   redirect_to user_url(date: params[:date])
   
   rescue ActiveRecord::RecordInvalid
@@ -70,21 +75,29 @@ class AttendancesController < ApplicationController
   
   def update_extrawork_request
     @attendance = Attendance.find(params[:format])
-    if @attendance.update_attributes(extrawork_params)
-      @attendance.status = "申請中"
-      @attendance.redesignated_endtime = @user.designated_work_end_time.change(year: @attendance.worked_on.year,
-                                                                               month: @attendance.worked_on.month,
-                                                                               day: @attendance.worked_on.day)
+    if (params[:attendance][:request_to] == "上長ユーザー1") || (params[:attendance][:request_to] == "上長ユーザー2")
+      @attendance.expecting_finish_time = params[:attendance][:expecting_finish_time]
       @attendance.expecting_finish_time = @attendance.expecting_finish_time.change(year: @attendance.worked_on.year,
                                                                                    month: @attendance.worked_on.month,
                                                                                    day: @attendance.worked_on.day)
       if params[:attendance][:next_day] == '1'
         @attendance.expecting_finish_time = @attendance.expecting_finish_time.tomorrow
       end
-      @attendance.save
-      flash[:success] = "残業申請を登録しました。"
+      @attendance.redesignated_endtime = @user.designated_work_end_time.change(year: @attendance.worked_on.year,
+                                                                               month: @attendance.worked_on.month,
+                                                                               day: @attendance.worked_on.day)
+      @attendance.status = "申請中"
+      @attendance.request_to = params[:attendance][:request_to]
+      @attendance.details_of_tasks = params[:attendance][:details_of_tasks]
+      if @attendance.save
+        flash[:success] = "残業申請を登録しました。"
+      else
+        flash[:danger] = "無効な入力データがあった為、残業申請の登録をキャンセルしました。"
+      end
+    else
+      flash[:danger] = "残業申請の登録には所属長の選択が必要です。"
     end
-    redirect_to user_url(@user)
+    redirect_to user_url(@user, @first_day)
   end
   
   # 残業申請の承認（上長）
@@ -146,8 +159,50 @@ class AttendancesController < ApplicationController
   # 勤怠修正ログ
   def approved_request
     @attendances = Attendance.where(user_id: @user.id).where(oneday_attendance_status: 3)
+    year_first = Date.current.year
+    month_first = Date.current.month
+    @year = params[:year] || year_first
+    @month = params[:month] || month_first
   end
   
+  # 一ヶ月分の勤怠申請
+  def monthly_request
+    attendance = Attendance.find_by(user_id: params[:id], worked_on: params[:date])
+      if (params[:monthly_approvement_to] == "上長ユーザー1") || (params[:monthly_approvement_to] == "上長ユーザー2")
+        attendance.update_attributes(monthly_approvement_to: params[:monthly_approvement_to], monthly_approvement_status: "申請中")
+        flash[:success] = "一ヶ月分の勤怠を申請しました。"
+      else
+        flash[:danger] = "所属長を選択してください。"
+      end
+    redirect_to @user
+  end
+  
+  # 一ヶ月分の勤怠承認（上長）
+  def edit_approve_monthly_request
+    @attendances = Attendance.where(monthly_approvement_to: @user.id).where(monthly_approvement_status: 2).or(Attendance.where(monthly_approvement_to: @user.id).where(monthly_approvement_status: 4))
+    requested_from = @attendances.pluck(:user_id) | @attendances.pluck(:user_id)
+    @users = User.find(requested_from)
+    
+  end
+
+  def update_approve_monthly_request
+    ActiveRecord::Base.transaction do
+      approve_monthly_request_params.each do |id, item|
+        attendance = Attendance.find(id)
+        n = attendance.id.to_s
+        if params[:attendances][n][:approve] == "1"  
+          attendance.update_attributes!(item)
+        end
+      end
+    end
+    flash[:success] = "所属長承認申請を更新しました。"
+    redirect_to user_url
+    
+  rescue ActiveRecord::RecordInvalid # トランザクションによるエラーの分岐です。
+    flash[:danger] = "所属長承認申請の更新をキャンセルしました。"
+    redirect_to user_url
+  end  
+    
   private
     # 1ヶ月分の勤怠情報を扱います。
     def attendances_params
@@ -166,5 +221,9 @@ class AttendancesController < ApplicationController
     
     def approve_oneday_request_params
       params.permit(attendances: [:oneday_attendance_status, :approve])[:attendances]
+    end
+    
+    def approve_monthly_request_params
+      params.permit(attendances: [:monthly_approvement_status])[:attendances]
     end
 end
