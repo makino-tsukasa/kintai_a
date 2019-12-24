@@ -22,8 +22,8 @@ ActiveRecord::Schema.define(version: 20191220013957) do
     t.integer "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "request_to"
     t.integer "status"
+    t.integer "request_to"
     t.datetime "redesignated_endtime"
     t.datetime "first_started_at"
     t.datetime "first_finished_at"
@@ -57,9 +57,9 @@ ActiveRecord::Schema.define(version: 20191220013957) do
     t.string "remember_digest"
     t.boolean "admin", default: false
     t.boolean "superior", default: false
-    t.datetime "basic_work_time", default: "2019-11-27 23:00:00"
-    t.datetime "designated_work_start_time", default: "2019-11-28 01:00:00"
-    t.datetime "designated_work_end_time", default: "2019-11-28 10:00:00"
+    t.datetime "basic_work_time", default: "2019-12-23 23:00:00"
+    t.datetime "designated_work_start_time", default: "2019-12-24 01:00:00"
+    t.datetime "designated_work_end_time", default: "2019-12-24 10:00:00"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
