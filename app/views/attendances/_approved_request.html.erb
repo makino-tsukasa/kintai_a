@@ -7,10 +7,10 @@
       <h1 class="modal-title">勤怠ログ</h1>
     </div>
     <div class="modal-body">
-      <%#= form_with(url: approved_request_user_path, method: :get) do |f| %>
-        <%#= f.select :year, options_for_select(['2018', '2019', '2020', '2021', '2022'], id: 'year') %> 年</br></br>
-        <%#= f.select :month, options_for_select(['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'], id: 'month') %> 月</br></br>
-      <%# end %>
+      <%= form_with(url: approved_request_user_path, method: :get) do |f| %>
+        <%= f.select :year, options_for_select(['2018', '2019', '2020', '2021', '2022'], id: 'year') %> 年</br></br>
+        <%= f.select :month, options_for_select(['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'], id: 'month') %> 月</br></br>
+      <% end %>
       <table class="table table-bordered" id="table-attendances">
         <thead>
           <tr>
