@@ -1,7 +1,7 @@
 # coding: utf-8
 
 User.create!(name: "管理ユーザー",
-             email: "sample@email.com",
+             email: "sample@example.com",
              employee_number: 1,
              uid: 1,
              password: "password",
@@ -9,7 +9,7 @@ User.create!(name: "管理ユーザー",
              admin: true)
              
 User.create!(name: "上長ユーザー1",
-             email: "sample2@email.com",
+             email: "sample1@example.com",
              employee_number: 2,
              uid: 2,
              password: "password",
@@ -17,7 +17,7 @@ User.create!(name: "上長ユーザー1",
              superior: true)
 
 User.create!(name: "上長ユーザー2",
-             email: "sample3@email.com",
+             email: "sample2@example.com",
              employee_number: 3,
              uid: 3,
              password: "password",
@@ -26,7 +26,7 @@ User.create!(name: "上長ユーザー2",
 
 60.times do |n|
   name  = Faker::Name.name
-  email = "sample-#{n+4}@email.com"
+  email = "sample-#{n+4}@example.com"
   employee_number = n + 4
   uid = n + 4
   password = "password"

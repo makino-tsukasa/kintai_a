@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  require 'csv'
+  
   has_many :attendances, dependent: :destroy
   attr_accessor :remember_token
   before_save { self.email = email.downcase }

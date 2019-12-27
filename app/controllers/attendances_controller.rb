@@ -1,7 +1,7 @@
 class AttendancesController < ApplicationController
   before_action :set_user, only: [:edit_one_month, :edit_extrawork_request, :update_extrawork_request,
                                   :edit_approve_extrawork_request, :edit_approve_oneday_request, :approved_request,
-                                  :monthly_request, :edit_approve_monthly_request]
+                                  :monthly_request, :edit_approve_monthly_request, :update_approve_extrawork_request]
   before_action :logged_in_user, only: [:update, :edit_one_month]
   before_action :set_one_month, only: :edit_one_month
   
@@ -35,37 +35,38 @@ class AttendancesController < ApplicationController
   
   # 一ヶ月分の勤怠編集ページから一日分の申請をする
   def update_one_month
-    ActiveRecord::Base.transaction do
-      attendances_params.each do |id, item|
-        attendance = Attendance.find(id)
-        
-        n = attendance.id.to_s
-        if params[:user][:attendances][n][:oneday_attendance_request_to].present?
-          attendance.update_attributes(item)
-          attendance.oneday_attendance_status = "申請中"
+    attendances_params.each do |id, item|
+      attendance = Attendance.find(id)
+      n = attendance.id.to_s
+      if params[:user][:attendances][n][:oneday_attendance_request_to].present?
+        attendance.oneday_attendance_request_to = params[:user][:attendances][n][:oneday_attendance_request_to]
+        attendance.note = params[:user][:attendances][n][:note]
+        attendance.oneday_attendance_status = "申請中"
+        if params[:user][:attendances][n][:request_started_at] != ""
+          attendance.request_started_at = params[:user][:attendances][n][:request_started_at]
           attendance.request_started_at = attendance.request_started_at.change(year: attendance.worked_on.year,
                                                                                month: attendance.worked_on.month,
                                                                                day: attendance.worked_on.day)
-          attendance.request_finished_at = attendance.request_finished_at.change(year: attendance.worked_on.year,
-                                                                                 month: attendance.worked_on.month,
-                                                                                 day: attendance.worked_on.day)
-          if params[:user][:attendances][n][:next_day] == "1"
-            attendance.request_finished_at = attendance.request_finished_at.tomorrow
-          end
-          attendance.save
-          flash[:success] = "勤怠変更を申請しました。"
-        else
-          flash[:danger] = "所属長の選択がない勤務日は変更されません。"
         end
-        
+        if params[:user][:attendances][n][:request_finished_at] != ""
+          attendance.request_finished_at = params[:user][:attendances][n][:request_finished_at]
+          attendance.request_finished_at = attendance.request_finished_at.change(year: attendance.worked_on.year,
+                                                                               month: attendance.worked_on.month,
+                                                                               day: attendance.worked_on.day)
+          if params[:user][:attendances][n][:next_day] == "1"
+          attendance.request_finished_at = attendance.request_finished_at.tomorrow
+          end
+        end
+        if attendance.save
+          flash[:success] = "該当する勤務日の勤怠変更を申請しました。"
+        else
+          flash[:danger] = "無効な入力がされた勤務日の申請をキャンセルしました。"
+        end
+      else
+        flash[:warning] = "所属長の選択がない勤務日は変更されません。"
       end
     end
-  
-  redirect_to user_url(date: params[:date])
-  
-  rescue ActiveRecord::RecordInvalid
-    flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
-    redirect_to attendances_edit_one_month_user_url(date: params[:date])
+    redirect_to user_url(date: params[:date])
   end
 
   # 残業申請
@@ -108,20 +109,14 @@ class AttendancesController < ApplicationController
   end
   
   def update_approve_extrawork_request
-    ActiveRecord::Base.transaction do
-      approve_extrawork_request_params.each do |id, item|
-        attendance = Attendance.find(id)
-        n = attendance.id.to_s
-        if params[:attendances][n][:approve] == "1"  
-          attendance.update_attributes!(item)
-        end
+    approve_extrawork_request_params.each do |id, item|
+    attendance = Attendance.find(id)
+    n = attendance.id.to_s
+      if params[:attendances][n][:approve] == "1"  
+        attendance.update_attributes!(item)
       end
     end
-    flash[:success] = "残業申請を更新しました。"
-    redirect_to user_url
-    
-  rescue ActiveRecord::RecordInvalid # トランザクションによるエラーの分岐です。
-    flash[:danger] = "残業申請の更新をキャンセルしました。"
+    flash[:success] = "残業申請を更新しました。（更新は変更欄にチェックの入っている申請にのみ適用されます。）"
     redirect_to user_url
   end
   
@@ -133,36 +128,35 @@ class AttendancesController < ApplicationController
   end
   
   def update_approve_oneday_request
-    ActiveRecord::Base.transaction do
-      approve_oneday_request_params.each do |id, item|
-        attendance = Attendance.find(id)
-        n = attendance.id.to_s
-        if params[:attendances][n][:approve] == "1"  
-          attendance.update_attributes!(item)
-          if attendance.oneday_attendance_status == "承認"
-            attendance.started_at = attendance.request_started_at
-            attendance.finished_at = attendance.request_finished_at
-            attendance.date_of_approvement = DateTime.current
-            attendance.save
-          end
+    approve_oneday_request_params.each do |id, item|
+      attendance = Attendance.find(id)
+      n = attendance.id.to_s
+      if params[:attendances][n][:approve] == "1"  
+        attendance.update_attributes!(item)
+        if attendance.oneday_attendance_status == "承認"
+          attendance.started_at = attendance.request_started_at
+          attendance.finished_at = attendance.request_finished_at
+          attendance.date_of_approvement = DateTime.current
+          attendance.save
         end
       end
     end
-    flash[:success] = "勤怠変更申請を更新しました。"
-    redirect_to user_url
-    
-  rescue ActiveRecord::RecordInvalid # トランザクションによるエラーの分岐です。
-    flash[:danger] = "勤怠変更申請の更新をキャンセルしました。"
+    flash[:success] = "勤怠変更申請を更新しました。（更新は変更欄にチェックの入っている申請にのみ適用されます。）"
     redirect_to user_url
   end
   
   # 勤怠修正ログ
   def approved_request
     @attendances = Attendance.where(user_id: @user.id).where(oneday_attendance_status: 3)
-    year_first = Date.current.year
-    month_first = Date.current.month
-    @year = params[:year] || year_first
-    @month = params[:month] || month_first
+    @year = params[:year].to_i
+    @month = params[:month].to_i
+    search_month = "#{@year}-#{@month}-1"
+    if params[:year].present? && params[:month] == "全ての月"
+      search_month = "#{@year}-1-1"
+      @attendances = @attendances.where(worked_on: search_month.in_time_zone.all_year)
+    elsif params[:year].present? && params[:month].present?
+      @attendances = @attendances.where(worked_on: search_month.in_time_zone.all_month)
+    end
   end
   
   # 一ヶ月分の勤怠申請
@@ -186,20 +180,14 @@ class AttendancesController < ApplicationController
   end
 
   def update_approve_monthly_request
-    ActiveRecord::Base.transaction do
-      approve_monthly_request_params.each do |id, item|
-        attendance = Attendance.find(id)
-        n = attendance.id.to_s
-        if params[:attendances][n][:approve] == "1"  
-          attendance.update_attributes!(item)
-        end
+    approve_monthly_request_params.each do |id, item|
+      attendance = Attendance.find(id)
+      n = attendance.id.to_s
+      if params[:attendances][n][:approve] == "1"  
+        attendance.update_attributes!(item)
       end
     end
-    flash[:success] = "所属長承認申請を更新しました。"
-    redirect_to user_url
-    
-  rescue ActiveRecord::RecordInvalid # トランザクションによるエラーの分岐です。
-    flash[:danger] = "所属長承認申請の更新をキャンセルしました。"
+    flash[:success] = "所属長承認申請を更新しました。（更新は変更欄にチェックの入っている申請にのみ適用されます。）"
     redirect_to user_url
   end  
     

@@ -19,10 +19,13 @@ class Attendance < ApplicationRecord
   validate :finished_at_is_invalid_without_a_started_at
   validate :finished_at_must_be_later_than_started_at
   
-  validate :request_finished_at_is_invalid_without_a_request_started_at
-  validate :request_started_at_is_invalid_without_a_request_finished_at
-  validate :request_finished_at_must_be_later_than_request_started_at
-  validate :expecting_finish_time_must_be_later_than_redesignated_endtime
+  validate :request_finished_at_is_invalid_without_a_request_started_at,
+           :request_started_at_is_invalid_without_a_request_finished_at,
+           :request_finished_at_must_be_later_than_request_started_at,
+           :expecting_finish_time_must_be_later_than_redesignated_endtime,
+           :oneday_attendance_status_cannot_save_without_request_started_at_and_request_finised_at,
+           :oneday_attendance_request_to_cannot_save_without_request_started_at_and_request_finised_at,
+           :note_cannot_save_without_request_started_at_and_request_finised_at
 
   # 出勤時間が存在しない場合、退勤時間は無効
   def finished_at_is_invalid_without_a_started_at
@@ -50,6 +53,24 @@ class Attendance < ApplicationRecord
   def request_finished_at_must_be_later_than_request_started_at
     if request_started_at.present? && request_finished_at.present?
       errors.add(:request_started_at, "より早い退勤時間は無効です") if request_started_at > request_finished_at
+    end
+  end
+  
+  def oneday_attendance_status_cannot_save_without_request_started_at_and_request_finised_at
+    if (oneday_attendance_status.present? && request_started_at.blank?) || (oneday_attendance_status.present? && request_finished_at.blank?)
+      errors.add(:oneday_attendance_status, "の登録には出勤時間と退勤時間の両方が必要です")
+    end  
+  end
+  
+  def oneday_attendance_request_to_cannot_save_without_request_started_at_and_request_finised_at
+    if (oneday_attendance_request_to.present? && request_started_at.blank?) || (oneday_attendance_request_to.present? && request_finished_at.blank?)
+      errors.add(:oneday_attendance_request_to, "の登録には出勤時間と退勤時間の両方が必要です")
+    end  
+  end
+  
+  def note_cannot_save_without_request_started_at_and_request_finised_at
+    if (note.present? && request_started_at.blank?) || (note.present? && request_finished_at.blank?)
+      errors.add(:note, "の登録には出勤時間と退勤時間の両方が必要です")
     end
   end
   

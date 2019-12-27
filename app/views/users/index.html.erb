@@ -3,8 +3,8 @@
 
 <h1>ユーザー一覧</h1>
 
-<%= form_tag import_users_path multipart: true do %>
-  <%= file_field_tag :file, class: "btn btn-sm btn-default" %><%= submit_tag "インポート", class: "btn btn-md btn-primary btn-csv-import" %>
+<%= form_with url: import_users_path, multipart: true, local: true do |f| %>
+  <%= f.file_field :file, class: "btn btn-sm btn-default" %><%= f.submit "インポート", class: "btn btn-md btn-primary btn-csv-import" %>
 <% end %>
 
 <div class="col-md-10 col-md-offset-1">

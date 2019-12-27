@@ -1,0 +1,37 @@
+<% provide(:title, "勤怠ログ") %>
+
+<h1>勤怠ログ</h1>
+<div class="row">
+  <div class="col-md-10 col-md-offset-1">
+    <%= form_with(url: approved_request_user_path, method: :get) do |f| %>
+      <%= f.select :year,options_for_select(["", "2018", "2019", "2020", "2021", "2022"], selected: "") %>：年</br></br>
+      <%= f.select :month, options_for_select(["", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "全ての月"], selected: ""), {}, :onchange => 'this.form.submit()' %>：月</br></br>
+    <% end %>
+    <table class="table table-bordered" id="table-attendances">
+      <thead>
+        <tr>
+          <th>日付</th>
+          <th>変更前出社時間</th>
+          <th>変更前退社時間</th>
+          <th>変更後出社時間</th>
+          <th>変更後退社時間</th>
+          <th>指示者</th>
+          <th>承認日</th>
+        </tr>
+      </thead>
+      <% @attendances.each do |at| %>
+        <tbody>
+          <tr>
+            <td><%= at.worked_on %></td>
+            <td><%= l(at.first_started_at, format: :time) if at.first_started_at.present? %></td>
+            <td><%= l(at.first_finished_at, format: :time) if at.first_finished_at.present? %></td>
+            <td><%= l(at.started_at, format: :time) %></td>
+            <td><%= l(at.finished_at, format: :time) %></td>
+            <td><%= at.oneday_attendance_request_to %></td>
+            <td><%= at.date_of_approvement.strftime("%Y-%m-%d") %></td>
+          </tr>
+        </tbody>
+      <% end %>
+    </table>
+  </div>
+</div>

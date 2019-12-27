@@ -69,7 +69,7 @@
   <% else %>
     <%= link_to "CSV出力", user_path(@user, date: @first_day, format: :csv), class: "btn btn-primary btn-csv-export disabled" %></br>
   <% end %>
-  <%= link_to "勤怠修正ログ（承認済）", approved_request_user_path(@user), remote: true, class: "btn btn-primary btn-reviced-attendaces" %>
+  <%= link_to "勤怠修正ログ（承認済）", approved_request_user_path(@user), class: "btn btn-primary btn-reviced-attendaces" %>
 <% end %>
 <table class="table table-bordered table-condensed" id="table-attendances">
   <thead>
@@ -209,4 +209,3 @@
 <div id="edit-approve-extrawork-request" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
 <div id="edit-approve-oneday-request" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
 <div id="edit-approve-monthly-request" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
-<div id="approved-request" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
