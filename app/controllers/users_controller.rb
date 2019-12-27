@@ -17,7 +17,7 @@ class UsersController < ApplicationController
   
   def import
     # fileはtmpに自動で一時保存される
-    if params[:file] == ""
+    if params[:file] == nil
       flash[:danger] = "インポートするCSVファイルを選択してください"
       redirect_to users_url
     else
