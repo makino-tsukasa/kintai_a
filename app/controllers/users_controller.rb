@@ -8,7 +8,7 @@ class UsersController < ApplicationController
   before_action :set_one_month, only: :show
   
   def index
-    @users = User.paginate(page: params[:page]).where.not(id: 1)
+    @users = User.paginate(page: params[:page]).where.not(id: 1).order(id: :asc)
   end
   
   def index_working_on
