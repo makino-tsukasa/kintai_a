@@ -9,37 +9,36 @@
     
     <div class="modal-body">
     <%= form_with(model: @attendances, url: approve_monthly_request_user_path(@user, @attendances), local: true, method: :patch) do |f| %>
-        <%= @users.each do |user| %>
-          <h4><%= "【#{user.name}からの１ヶ月分勤怠申請】" %></h4>
-          
-              <table class="table table-bordered" id="table-attendances">
-                <thead>
-                  <tr>
-                    <th>年月</th>
-                    <th>指示者確認㊞</th>
-                    <th>変更</th>
-                    <th>勤怠を確認する</th>
-                  </tr>
-                </thead>
+      <% @users.each do |user| %>
+        <h4><%= "【#{user.name}からの１ヶ月分勤怠申請】" %></h4>
+        
+          <table class="table table-bordered" id="table-attendances">
+            <thead>
+              <tr>
+                <th>年月</th>
+                <th>指示者確認㊞</th>
+                <th>変更</th>
+                <th>勤怠を確認する</th>
+              </tr>
+            </thead>
 
-                <% attendances = @attendances.where(user_id: user.id) %>
-                  <% attendances.each do |attendance| %>
-                    <%= fields_for "attendances[]", attendance do |af| %>
-                      <tbody>
-                        <tr>
-                          <td><%= l(attendance.worked_on, format: :middle) %></td>
-                          <td><%= af.select :monthly_approvement_status, Attendance.monthly_approvement_statuses.keys.to_a %></td>
-                          <td><%= af.check_box :approve %></td>
-                          <td><%= link_to '確認', user_path(user, date: attendance.worked_on), class: "btn btn-md btn-primary" %></td>
-                        </tr>
-                      </tbody>
-                    <% end %>
+            <% attendances = @attendances.where(user_id: user.id) %>
+              <% attendances.each do |attendance| %>
+                <%= fields_for "attendances[]", attendance do |af| %>
+                  <tbody>
+                    <tr>
+                      <td><%= l(attendance.worked_on, format: :middle) %></td>
+                      <td><%= af.select :monthly_approvement_status, Attendance.monthly_approvement_statuses.keys.to_a %></td>
+                      <td><%= af.check_box :approve %></td>
+                      <td><%= link_to '確認', user_path(user, date: attendance.worked_on), class: "btn btn-md btn-primary" %></td>
+                    </tr>
+                  </tbody>
                 <% end %>
-              </table>
-            <% end %>
-          <%= f.submit "変更を送信する", class: "btn btn-md btn-primary btn-submit-request" %>
+              <% end %>
+            </table>
+          <% end %>
+        <%= f.submit "変更を送信する", class: "btn btn-md btn-primary btn-submit-request" %>
       <% end %>  
     </div>
   </div>
 </div>
-    

@@ -9,73 +9,73 @@
     
     <div class="modal-body">
       <%= form_with(model: @attendances, url: approve_oneday_request_user_path(@user, @attendances), local: true, method: :patch) do |f| %>
-        <%= @users.each do |user| %>
+        <% @users.each do |user| %>
           <h4><%= "【#{user.name}からの勤怠変更申請】" %></h4>
           
-              <table class="table table-bordered" id="table-attendances">
-                <thead>
-                  <tr>
-                    <td rowspan="3">日付</td>
-                    <td rowspan="3">曜日</td>
-                    <td colspan="4">変更前</td>
-                    <td colspan="4">変更後</td>
-                    <td rowspan="3">備考</td>
-                    <td rowspan="3">指示者確認㊞</td>
-                    <td rowspan="3">変更</td>
-                    <td rowspan="3">勤怠を確認する</td>
-                  </tr>
-                  <tr>
-                    <td colspan="2">出社</td>
-                    <td colspan="2">退社</td>
-                    <td colspan="2">出社</td>
-                    <td colspan="2">退社</td>
-                  </tr>
-                  <tr>
-                    <td>時</td>
-                    <td>分</td>
-                    <td>時</td>
-                    <td>分</td>
-                    <td>時</td>
-                    <td>分</td>
-                    <td>時</td>
-                    <td>分</td>
-                  </tr>
-                </thead>
+            <table class="table table-bordered" id="table-attendances">
+              <thead>
+                <tr>
+                  <td rowspan="3">日付</td>
+                  <td rowspan="3">曜日</td>
+                  <td colspan="4">変更前</td>
+                  <td colspan="4">変更後</td>
+                  <td rowspan="3">備考</td>
+                  <td rowspan="3">指示者確認㊞</td>
+                  <td rowspan="3">変更</td>
+                  <td rowspan="3">勤怠を確認する</td>
+                </tr>
+                <tr>
+                  <td colspan="2">出社</td>
+                  <td colspan="2">退社</td>
+                  <td colspan="2">出社</td>
+                  <td colspan="2">退社</td>
+                </tr>
+                <tr>
+                  <td>時</td>
+                  <td>分</td>
+                  <td>時</td>
+                  <td>分</td>
+                  <td>時</td>
+                  <td>分</td>
+                  <td>時</td>
+                  <td>分</td>
+                </tr>
+              </thead>
 
-                <% attendances = @attendances.where(user_id: user.id) %>
-                  <% attendances.each do |attendance| %>
-                    <%= fields_for "attendances[]", attendance do |af| %>
-                      <tbody>
-                        <tr>
-                          <td><%= l(attendance.worked_on, format: :short) %></td>
-                          <td>
-                            <% if attendance.worked_on.wday == 0 %>
-                              <font color="red">日</font>
-                            <% elsif attendance.worked_on.wday == 6 %>
-                              <font color="blue">土</font>
-                            <% else %>
-                              <%= $days_of_the_week[attendance.worked_on.wday] %>
-                            <% end %>
-                          </td>
-                          <td><%= l(attendance.started_at, format: :hour) if attendance.started_at.present? %></td>
-                          <td><%= l(attendance.started_at, format: :min) if attendance.started_at.present? %></td>
-                          <td><%= l(attendance.finished_at, format: :hour) if attendance.finished_at.present? %></td>
-                          <td><%= l(attendance.finished_at, format: :min) if attendance.finished_at.present? %></td>
-                          <td><%= l(attendance.request_started_at, format: :hour) %></td>
-                          <td><%= l(attendance.request_started_at, format: :min) %></td>
-                          <td><%= l(attendance.request_finished_at, format: :hour) %></td>
-                          <td><%= l(attendance.request_finished_at, format: :min) %></td>
-                          <td><%= attendance.note %></td>
-                          <td><%= af.select :oneday_attendance_status, Attendance.oneday_attendance_statuses.keys.to_a, class: "form-control" %></td>
-                          <td><%= af.check_box :approve %></td>
-                          <td><%= link_to '確認', user_path(user, date: attendance.worked_on.beginning_of_month), class: "btn btn-md btn-primary" %></td>
-                        </tr>
-                      </tbody>
-                    <% end %>
-                <% end %>
-              </table>
-            <% end %>
-          <%= f.submit "変更を送信する", class: "btn btn-md btn-primary btn-submit-request" %>
+              <% attendances = @attendances.where(user_id: user.id) %>
+                <% attendances.each do |attendance| %>
+                  <%= fields_for "attendances[]", attendance do |af| %>
+                    <tbody>
+                      <tr>
+                        <td><%= l(attendance.worked_on, format: :short) %></td>
+                        <td>
+                          <% if attendance.worked_on.wday == 0 %>
+                            <font color="red">日</font>
+                          <% elsif attendance.worked_on.wday == 6 %>
+                            <font color="blue">土</font>
+                          <% else %>
+                            <%= $days_of_the_week[attendance.worked_on.wday] %>
+                          <% end %>
+                        </td>
+                        <td><%= l(attendance.started_at, format: :hour) if attendance.started_at.present? %></td>
+                        <td><%= l(attendance.started_at, format: :min) if attendance.started_at.present? %></td>
+                        <td><%= l(attendance.finished_at, format: :hour) if attendance.finished_at.present? %></td>
+                        <td><%= l(attendance.finished_at, format: :min) if attendance.finished_at.present? %></td>
+                        <td><%= l(attendance.request_started_at, format: :hour) %></td>
+                        <td><%= l(attendance.request_started_at, format: :min) %></td>
+                        <td><%= l(attendance.request_finished_at, format: :hour) %></td>
+                        <td><%= l(attendance.request_finished_at, format: :min) %></td>
+                        <td><%= attendance.note %></td>
+                        <td><%= af.select :oneday_attendance_status, Attendance.oneday_attendance_statuses.keys.to_a, class: "form-control" %></td>
+                        <td><%= af.check_box :approve %></td>
+                        <td><%= link_to '確認', user_path(user, date: attendance.worked_on.beginning_of_month), class: "btn btn-md btn-primary" %></td>
+                      </tr>
+                    </tbody>
+                  <% end %>
+              <% end %>
+            </table>
+          <% end %>
+        <%= f.submit "変更を送信する", class: "btn btn-md btn-primary btn-submit-request" %>
       <% end %>  
     </div>
   </div>
