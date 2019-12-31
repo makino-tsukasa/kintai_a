@@ -18,10 +18,11 @@ class UsersController < ApplicationController
   def import
     # fileはtmpに自動で一時保存される
     if params[:file] == nil
-      flash[:danger] = "インポートするCSVファイルを選択してください"
+      flash[:danger] = "インポートするCSVファイルを選択してください。"
       redirect_to users_url
     else
       User.import(params[:file])
+      flash[:success] = "CSVインポートによるユーザー登録が完了しました。"
       redirect_to users_url
     end
   end
@@ -35,9 +36,9 @@ class UsersController < ApplicationController
           #csv用の処理を書く
       end
     end
-    @extrawork_request = Attendance.where(request_to: @user.id).where(status: 2).or(Attendance.where(request_to: @user.id).where(status: 4))
-    @oneday_request = Attendance.where(oneday_attendance_request_to: @user.id).where(oneday_attendance_status: 2).or(Attendance.where(oneday_attendance_request_to: @user.id).where(oneday_attendance_status: 4))
-    @monthly_request = Attendance.where(monthly_approvement_to: @user.id).where(monthly_approvement_status: 2).or(Attendance.where(monthly_approvement_to: @user.id).where(monthly_approvement_status: 4))
+    @extrawork_request = Attendance.where(request_to: @user.id).where(status: 2)
+    @oneday_request = Attendance.where(oneday_attendance_request_to: @user.id).where(oneday_attendance_status: 2)
+    @monthly_request = Attendance.where(monthly_approvement_to: @user.id).where(monthly_approvement_status: 2)
     @attendance = Attendance.find_by(user_id: params[:id], worked_on: @first_day)
   end
 
